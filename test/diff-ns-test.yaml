@@ -1,0 +1,76 @@
+# example-app, ServiceMonitor and PodMonitor CRs in a different
+# namespace scraped by prometheus
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: ep-demo
+  name: ep-demo
+spec:
+  finalizers:
+  - kubernetes
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-app-demo
+  namespace: ep-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: example-app-demo
+  template:
+    metadata:
+      labels:
+        app: example-app-demo
+    spec:
+      containers:
+      - name: example-app-demo
+        image: fabxc/instrumented_app
+        ports:
+        - name: web
+          containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: example-app-demo
+  labels:
+    app: example-app-demo
+  namespace: ep-demo
+spec:
+  selector:
+    app: example-app-demo
+  ports:
+  - name: web
+    port: 8080
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: example-app-demo
+  labels:
+    team: frontend
+  namespace: ep-demo
+spec:
+  selector:
+    matchLabels:
+      app: example-app-demo
+  endpoints:
+  - port: web
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: example-app-demo
+  labels:
+    team: frontend
+  namespace: ep-demo
+spec:
+  selector:
+    matchLabels:
+      app: example-app-demo
+  podMetricsEndpoints:
+  - port: web

@@ -1,0 +1,47 @@
+https://artifacthub.io/packages/helm/prometheus-community/prometheus-node-exporter
+
+https://prometheus-community.github.io/helm-charts/
+
+# prometheus-node-exporter helm chart 2.3.0 version installs node-exporter image v1.2.2 version
+
+https://github.com/prometheus-community/helm-charts/blob/prometheus-node-exporter-2.3.0/charts/prometheus-node-exporter/Chart.yaml#L2
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm search repo node-exporter -l
+
+$ helm search repo node-exporter -l | grep 2.3.0
+prometheus-community/prometheus-node-exporter	2.3.0        	1.2.2      	A Helm chart for prometheus node-exporter
+
+$ git branch
+* my-prometheus
+
+cd repo-name/my_prometheus
+helm fetch prometheus-community/prometheus-node-exporter --version 2.3.0
+tar -xvf prometheus-node-exporter-2.3.0.tgz 
+rm -rf prometheus-node-exporter-2.3.0.tgz
+
+helm install extprometheus-node-exporter prometheus-node-exporter/
+
+$ kubectl get pods,svc -A | grep extprometheus
+default           pod/extprometheus-node-exporter-2pltp                   1/1     Running   0             14m
+default           pod/extprometheus-node-exporter-f4xft                   1/1     Running   0             14m
+default           pod/extprometheus-node-exporter-wj27f                   1/1     Running   0             14m
+default           pod/extprometheus-node-exporter-x7l42                   1/1     Running   0             14m
+default           service/extprometheus-node-exporter                  ClusterIP      10.100.247.58    <none>                                                                  9100/TCP                       14m
+
+$ helm status extprometheus-node-exporter
+NAME: extprometheus-node-exporter
+LAST DEPLOYED: Fri Feb 10 14:04:10 2023
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app=prometheus-node-exporter,release=extprometheus-node-exporter" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:9100 to use your application"
+  kubectl port-forward --namespace default $POD_NAME 9100
+
+# to uninstall prometheus-node-exporter helm chart
+helm uninstall extprometheus-node-exporter

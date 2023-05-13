@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-ubuntu
+  namespace: ns-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-ubuntu
+  template:
+    metadata:
+      labels:
+        app: test-ubuntu
+    spec:
+      containers:
+      - image: ubuntu:xenial
+        name: test-ubuntu
+        command: ["/bin/bash"]
+        args: ["-c", "echo \"sleeping forever ...\" && sleep infinity"]

@@ -1,0 +1,48 @@
+https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics
+
+https://prometheus-community.github.io/helm-charts/
+
+# kube-state-metrics helm chart 4.23.0 version installs kube-state-metrics image v2.6.0 version
+
+https://github.com/prometheus-community/helm-charts/blob/kube-state-metrics-4.23.0/charts/kube-state-metrics/Chart.yaml#L11
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm search repo kube-state-metrics -l
+
+$ helm search repo kube-state-metrics -l | grep 2.6.0
+prometheus-community/kube-state-metrics	4.23.0       	2.6.0      	Install kube-state-metrics to generate and expo...
+
+$ git branch
+* my-prometheus
+
+cd repo-name/my_prometheus
+helm fetch prometheus-community/kube-state-metrics --version 4.23.0
+tar -xvf kube-state-metrics-4.23.0.tgz
+rm -rf kube-state-metrics-4.23.0.tgz
+
+helm install extprometheus-kube-state-metrics kube-state-metrics/
+$ kubectl get pods,svc -A | grep extprometheus
+default           pod/extprometheus-kube-state-metrics-b8dd989b-zc4ng     1/1     Running   0             4m36s
+default           service/extprometheus-kube-state-metrics         ClusterIP      10.100.233.119   <none>     8080/TCP      4m37s
+
+$ helm status extprometheus-kube-state-metrics
+NAME: extprometheus-kube-state-metrics
+LAST DEPLOYED: Tue Feb 14 12:55:31 2023
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+kube-state-metrics is a simple service that listens to the Kubernetes API server and generates metrics about the state of the objects.
+The exposed metrics can be found here:
+https://github.com/kubernetes/kube-state-metrics/blob/master/docs/README.md#exposed-metrics
+
+The metrics are exported on the HTTP endpoint /metrics on the listening port.
+In your case, extprometheus-kube-state-metrics.default.svc.cluster.local:8080/metrics
+
+They are served either as plaintext or protobuf depending on the Accept header.
+They are designed to be consumed either by Prometheus itself or by a scraper that is compatible with scraping a Prometheus client endpoint.
+
+# to uninstall extprometheus-kube-state-metrics helm chart
+helm uninstall extprometheus-kube-state-metrics

@@ -1,0 +1,100 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: example-app
+  labels:
+    team: frontend
+  namespace: ep
+spec:
+  selector:
+    matchLabels:
+      app: example-app
+  endpoints:
+  - port: web
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: example-app
+  labels:
+    team: frontend
+  namespace: ep
+spec:
+  selector:
+    matchLabels:
+      app: example-app
+  podMetricsEndpoints:
+  - port: web
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus
+  namespace: ep
+spec:
+  image: prom/prometheus:v2.39.1
+  serviceAccountName: prometheus
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector: {}
+  podMonitorNamespaceSelector: {}
+  podMonitorSelector: {}
+  resources:
+    requests:
+      memory: 400Mi
+  enableAdminAPI: false
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: prometheus-node-exporter
+  labels:
+    team: frontend
+  namespace: ep
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-node-exporter
+  endpoints:
+  - port: metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: prometheus-node-exporter
+  labels:
+    team: frontend
+  namespace: ep
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-node-exporter
+  podMetricsEndpoints:
+  - port: metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kube-state-metrics
+  labels:
+    team: frontend
+  namespace: ep
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kube-state-metrics
+  endpoints:
+  - port: http
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: kube-state-metrics
+  labels:
+    team: frontend
+  namespace: ep
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kube-state-metrics
+  podMetricsEndpoints:
+  - port: http
